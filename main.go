@@ -57,6 +57,7 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
             if verbose {
                 fmt.Printf("%s found: \t %q\r\n", current, res)
             }
+
             tmp := fmt.Sprintf("%s - %s", current, res)
             output = append(output, tmp)
             found++
@@ -67,6 +68,32 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
     fmt.Printf("%v\r\n", output)
 }
 
+func stringInSlice(a int, list []int) bool {
+    for _, b := range list {
+        if b == a {
+            return true
+        }
+    }
+    return false
+}
+
+
+/**
+ * @todo This function really needs to be rethought out
+ */
+func bruterAttack(server string, length int, verbose bool) {
+    disallowedChars := []int{47,46,58,59,60,61,62,63,64,91,92,93,94,95,96}
+    for i := 45; i < 122; i++ {
+        if stringInSlice(i, disallowedChars) {
+            continue
+        }
+
+        for x := 0; x <= length; i++ {
+            fmt.Println(string(i))
+        }
+    }
+}
+
 func main() {
     server      := flag.String("server",    "",     "The server to brute")
     wordlist    := flag.String("wordlist",  "",     "Wordlist if you want dictionary attack (new line delimited)")
@@ -74,6 +101,8 @@ func main() {
 
 
     flag.Parse()
+
+    bruterAttack(*server, 3, false);
 
     if *server == "" {
         log.Fatal("You must specify a server")
