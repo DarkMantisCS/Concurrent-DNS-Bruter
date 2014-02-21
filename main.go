@@ -24,6 +24,16 @@ func checkDomain(subdomain string) bool {
     return true
 }
 
+func checkDnsRequest(current string) (string, error){
+    res, err := net.LookupHost(current)
+
+    if err != nil {
+        return "", err
+    }
+
+    return fmt.Sprintf("%s",res), nil
+}
+
 func dictionaryAttack(server string, wordlist string, verbose bool) {
     words, err := ioutil.ReadFile(wordlist)
 
@@ -48,20 +58,19 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
 
         current := fmt.Sprintf("%s.%s", subdomain, server)
 
-        res, err := net.LookupHost(current)
+        res, err := checkDnsRequest(current)
 
         if err != nil {
             notFound++
         } else {
-
             if verbose {
                 fmt.Printf("%s found: \t %q\r\n", current, res)
             }
-
             tmp := fmt.Sprintf("%s - %s", current, res)
             output = append(output, tmp)
             found++
         }
+
     }
 
     fmt.Printf("%d Total Found;\r\n%d Total NOT Found\r\n", found, notFound)
