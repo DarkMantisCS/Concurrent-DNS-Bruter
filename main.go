@@ -70,7 +70,6 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
             output = append(output, tmp)
             found++
         }
-
     }
 
     fmt.Printf("%d Total Found;\r\n%d Total NOT Found\r\n", found, notFound)
@@ -107,11 +106,10 @@ func main() {
     server      := flag.String("server",    "",     "The server to brute")
     wordlist    := flag.String("wordlist",  "",     "Wordlist if you want dictionary attack (new line delimited)")
     verbose     := flag.Bool("verbose",     false,  "Set verbosity up (true|false)")
-
+    length      := flag.Int("length",       6,      "Sets the max length of the brute forcer")
 
     flag.Parse()
 
-    bruterAttack(*server, 3, false);
 
     if *server == "" {
         log.Fatal("You must specify a server")
@@ -120,7 +118,7 @@ func main() {
     // Use the wordlist over brute force
     if *wordlist != "" {
         dictionaryAttack(*server, *wordlist, *verbose)
+    } else {
+        bruterAttack(*server, *length, *verbose);
     }
-
-    // Brute force method
 }
