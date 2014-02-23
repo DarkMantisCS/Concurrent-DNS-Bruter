@@ -11,9 +11,13 @@ import (
 )
 
 var (
-  log       = logger.New()
+  Log       = logger.New().Log
   ValidWord = regexp.MustCompile(`^[a-zA-Z0-9_-].*$`)
 )
+
+// func checkByBrute(ns string) (bool, error) {
+//     dns := net.Dial("tcp", )
+// }
 
 func checkDomain(subdomain string) bool {
   if !ValidWord.MatchString(subdomain) {
@@ -37,7 +41,7 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
   words, err := ioutil.ReadFile(wordlist)
 
   if err != nil {
-    log.Log("e", err.Error())
+    Log("e", err.Error())
   }
 
   found := 0
@@ -63,7 +67,7 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
       notFound++
     } else {
       if verbose {
-        log.Log(fmt.Sprintf("%s found: \t %q", current, res))
+        Log(fmt.Sprintf("%s found: \t %q", current, res))
       }
       tmp := fmt.Sprintf("%s - %s", current, res)
       output = append(output, tmp)
@@ -71,8 +75,7 @@ func dictionaryAttack(server string, wordlist string, verbose bool) {
     }
   }
 
-  log.
-    Log(fmt.Sprintf("%d Total Found", found)).
+  Log(fmt.Sprintf("%d Total Found", found)).
     Log(fmt.Sprintf("%d Total Not Found", notFound)).
     Log(fmt.Sprintf("%+v", output))
 }
@@ -91,24 +94,26 @@ func stringInSlice(a int, list []int) bool {
  */
 func bruterAttack(server string, length int, verbose bool) {
   disallowedChars := []int{47, 46, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96}
-  for i := 45; i <= 122; i++ {
-    if stringInSlice(i, disallowedChars) {
-      continue
-    }
+  chars := make([]rune, length)
 
-    for y := 45; y <= 122; y++ {
-      if stringInSlice(y, disallowedChars) {
+  for c := 0; c < len(chars); c++ {
+    chars[c] = rune(45)
+    for chars[c] <= 122 {
+      if stringInSlice(int(chars[c]), disallowedChars) {
+        chars[c]++
         continue
       }
-      str := []string{string(i)}
-      for x := 0; x <= length; x++ {
-        j := x + y
-        if j > 122 || stringInSlice(j, disallowedChars) {
+      for x := 0; x < len(chars); x++ {
+        if x == c {
           continue
         }
-        str = append(str, string(j))
+        for y := 45; y <= 122; y++ {
+          chars[x] = rune(y)
+          // TODO: Handle bruter data
+          Log(fmt.Sprintf("%s.%s", string(chars), server))
+        }
       }
-      log.Log(fmt.Sprintf("%+v", str))
+      chars[c]++
     }
   }
 }
@@ -122,7 +127,7 @@ func main() {
 
   args := flag.Args()
   if len(args) == 0 {
-    log.Log("c", "No host provided to search.")
+    Log("c", "No host provided to search.")
   }
 
   for _, server := range args {
