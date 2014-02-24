@@ -11,8 +11,10 @@ import (
 )
 
 var (
-  Log       = logger.New().Log
-  ValidWord = regexp.MustCompile(`^[a-zA-Z0-9_-].*$`)
+  Log             = logger.New().Log
+  ValidWord       = regexp.MustCompile(`^[a-zA-Z0-9_-].*$`)
+  DisallowedChars = []int{47, 46, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94,
+    95, 96}
 )
 
 // func checkByBrute(ns string) (bool, error) {
@@ -93,13 +95,12 @@ func stringInSlice(a int, list []int) bool {
  * @todo This function really needs to be rethought out
  */
 func bruterAttack(server string, length int, verbose bool) {
-  disallowedChars := []int{47, 46, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96}
   chars := make([]rune, length)
 
   for c := 0; c < len(chars); c++ {
     chars[c] = rune(45)
     for chars[c] <= 122 {
-      if stringInSlice(int(chars[c]), disallowedChars) {
+      if stringInSlice(int(chars[c]), DisallowedChars) {
         chars[c]++
         continue
       }
