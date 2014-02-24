@@ -109,6 +109,9 @@ func bruterAttack(server string, length int, verbose bool) {
           continue
         }
         for y := 45; y <= 122; y++ {
+          if stringInSlice(y, DisallowedChars) {
+            continue
+          }
           chars[x] = rune(y)
           // TODO: Handle bruter data
           Log(fmt.Sprintf("%s.%s", string(chars), server))
