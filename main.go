@@ -13,13 +13,64 @@ import (
 var (
   Log             = logger.New().Log
   ValidWord       = regexp.MustCompile(`^[a-zA-Z0-9_-].*$`)
-  DisallowedChars = []int{47, 46, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94,
-    95, 96}
+  // DisallowedChars = []int{47, 46, 58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96}
+
+  AllowedChars    = []rune{'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9','-','_'}
 )
 
-// func checkByBrute(ns string) (bool, error) {
-//     dns := net.Dial("tcp", )
-// }
+/**
+ * @todo This function really needs to be rethought out
+ */
+func bruterAttack(server string, length int, verbose bool) {
+  chars := make([]rune, length)
+
+  for c := 0; c < len(chars); c++ {
+    for i := 0; i < len(chars); i++{
+      if i == c {
+        continue;
+      }
+      chars[c] = AllowedChars[i]
+      for x := 0; x < len(chars); x++ {
+        if x == i {
+          continue;
+        }
+        chars[i] = AllowedChars[x]
+        for y := 0; y < len(AllowedChars); y++ {
+          if y == x {
+            continue;
+          }
+          chars[x] = AllowedChars[y]
+          fmt.Println(string(chars))
+        }
+      }
+    }
+    chars[c]++
+  }
+
+
+  // for c := 0; c < len(chars); c++ {
+  //   for chars[c] <= 122 {
+  //     if stringInSlice(int(chars[c]), DisallowedChars) {
+  //       chars[c]++
+  //       continue
+  //     }
+  //     for x := 0; x < len(chars); x++ {
+  //       if x == c {
+  //         continue
+  //       }
+  //       for y := 45; y <= 122; y++ {
+  //         if stringInSlice(y, DisallowedChars) {
+  //           continue
+  //         }
+  //         chars[x] = rune(y)
+  //         // TODO: Handle bruter data
+  //         Log(fmt.Sprintf("%s.%s", string(chars), server))
+  //       }
+  //     }
+  //     chars[c]++
+  //   }
+  // }
+}
 
 func checkDomain(subdomain string) bool {
   if !ValidWord.MatchString(subdomain) {
@@ -91,36 +142,6 @@ func stringInSlice(a int, list []int) bool {
   return false
 }
 
-/**
- * @todo This function really needs to be rethought out
- */
-func bruterAttack(server string, length int, verbose bool) {
-  chars := make([]rune, length)
-
-  for c := 0; c < len(chars); c++ {
-    chars[c] = rune(45)
-    for chars[c] <= 122 {
-      if stringInSlice(int(chars[c]), DisallowedChars) {
-        chars[c]++
-        continue
-      }
-      for x := 0; x < len(chars); x++ {
-        if x == c {
-          continue
-        }
-        for y := 45; y <= 122; y++ {
-          if stringInSlice(y, DisallowedChars) {
-            continue
-          }
-          chars[x] = rune(y)
-          // TODO: Handle bruter data
-          Log(fmt.Sprintf("%s.%s", string(chars), server))
-        }
-      }
-      chars[c]++
-    }
-  }
-}
 
 func main() {
   wordlist := flag.String("wordlist", "", "Wordlist if you want dictionary attack (new line delimited)")
